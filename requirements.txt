@@ -1,6 +1,7 @@
 streamlit
 pandas
-matplotlib
-scikit-learn
 numpy
+matplotlib
+seaborn
+scikit-learn
 pymongo
