@@ -18,7 +18,7 @@ data = list(collection.find({}, {"_id": 0}))  # bỏ _id cho dễ xử lý
 df = pd.DataFrame(data)
 
 # Load model
-model = joblib.load("house_price_rf_model")
+model = joblib.load("house_price_rf_model.pkl")
 
 tab1, tab2, tab3 = st.tabs(["📂 Dữ liệu", "📊 Thống kê", "🤖 Dự đoán"])
 
