@@ -79,11 +79,13 @@ elif choice == "🤖 Dự đoán Giá Nhà":
         submit = st.form_submit_button("🚀 Dự đoán ngay")
 
         if submit:
-            input_data = pd.DataFrame([[bedrooms, bathrooms, sqft_living, floors, condition]],
-                                      columns=["bedrooms", "bathrooms", "sqft_living", "floors", "condition"])
-            input_data.columns = model.feature_names_in_
-            prediction = model.predict(input_data)
-            st.success(f"✅ Giá nhà dự đoán: ${prediction[0]:,.2f}")
-            st.progress(min(int(prediction[0] / 1500000 * 100), 100))
+    input_data = pd.DataFrame([[bedrooms, bathrooms, sqft_living, floors, condition]],
+                              columns=["bedrooms", "bathrooms", "sqft_living", "floors", "condition"])
+    
+    # Không cần gán lại columns nữa
+    prediction = model.predict(input_data)
+    st.success(f"✅ Giá nhà dự đoán: ${prediction[0]:,.2f}")
+    st.progress(min(int(prediction[0] / 1500000 * 100), 100))
+
 
 st.caption("📌 Made with ❤️ by Khalam | Dữ liệu từ MongoDB | ML: RandomForest")
