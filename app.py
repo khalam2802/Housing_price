@@ -59,6 +59,8 @@ elif choice == "📊 Thống kê & Biểu đồ":
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.boxplot(x="bedrooms", y="price", data=df, palette="viridis", ax=ax)
     ax.set_title("Giá nhà theo số phòng ngủ")
+    ax.set_xlabel("Số phòng ngủ")
+    ax.set_ylabel("Giá nhà (USD)")
     ax.legend(["Phân bố giá nhà"])
     st.pyplot(fig)
 
@@ -66,6 +68,8 @@ elif choice == "📊 Thống kê & Biểu đồ":
     fig, ax = plt.subplots(figsize=(10, 5))
     scatter = sns.scatterplot(data=df, x="sqft_living", y="price", hue="bedrooms", palette="cool", ax=ax)
     ax.set_title("Mối liên hệ giữa diện tích và giá nhà")
+    ax.set_xlabel("Diện tích (sqft)")
+    ax.set_ylabel("Giá nhà (USD)")
     ax.legend(title="Số phòng ngủ")
     st.pyplot(fig)
 
@@ -91,11 +95,12 @@ elif choice == "📊 Thống kê & Biểu đồ":
     )
     for i in range(len(grouped)):
         ax.text(grouped["bedrooms"][i], grouped["bathrooms"][i],
-                grouped["count"][i], ha="center", va="center", fontsize=8)
+                grouped["count"][i], ha="center", va="center", fontsize=8, color="black")
     ax.set_xlabel("Số phòng ngủ")
     ax.set_ylabel("Số phòng tắm")
     ax.set_title("Phân bố nhà theo Phòng Ngủ & Tắm (kích thước = số lượng)")
-    legend = ax.legend(*bubble.legend_elements("sizes", num=6), title="Số lượng")
+    handles, labels = bubble.legend_elements(prop="sizes", alpha=0.6, num=6)
+    legend = ax.legend(handles, labels, title="Số lượng", loc='upper left', bbox_to_anchor=(1, 1))
     st.pyplot(fig)
 
     if "city" in df.columns:
@@ -109,10 +114,12 @@ elif choice == "📊 Thống kê & Biểu đồ":
         ax.invert_yaxis()
         st.pyplot(fig)
 
-    st.markdown("### 🧮 Tương quan Diện tích và Giá nhà")
+    st.markdown("### 🧮 Hồi quy tuyến tính Giá theo Diện tích")
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.regplot(data=df, x="sqft_living", y="price", scatter_kws={'alpha':0.5}, line_kws={"color": "red"}, ax=ax)
     ax.set_title("Quan hệ giữa diện tích và giá nhà")
+    ax.set_xlabel("Diện tích (sqft)")
+    ax.set_ylabel("Giá nhà (USD)")
     ax.legend(["Hồi quy tuyến tính"])
     st.pyplot(fig)
 
@@ -137,3 +144,4 @@ elif choice == "🤖 Dự đoán Giá Nhà":
             st.progress(min(int(prediction[0] / 1500000 * 100), 100))
 
 st.caption("📌 Made with ❤️ by Khalam | Dữ liệu từ MongoDB | ML: RandomForest")
+
