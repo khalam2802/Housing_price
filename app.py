@@ -52,18 +52,21 @@ elif choice == "📊 Thống kê & Biểu đồ":
     sns.histplot(df["price"], kde=True, color="steelblue", bins=40, ax=ax)
     ax.set_title("Phân phối giá nhà", fontsize=14)
     ax.set_xlabel("Giá nhà (USD)")
+    ax.legend(["Mật độ KDE"])
     st.pyplot(fig)
 
     st.markdown("### 🛏️ Hộp Giá Theo Số Phòng Ngủ")
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.boxplot(x="bedrooms", y="price", data=df, palette="viridis", ax=ax)
     ax.set_title("Giá nhà theo số phòng ngủ")
+    ax.legend(["Phân bố giá nhà"])
     st.pyplot(fig)
 
     st.markdown("### 📐 Giá nhà theo Diện tích sinh hoạt")
     fig, ax = plt.subplots(figsize=(10, 5))
-    sns.scatterplot(data=df, x="sqft_living", y="price", hue="bedrooms", palette="cool", ax=ax)
+    scatter = sns.scatterplot(data=df, x="sqft_living", y="price", hue="bedrooms", palette="cool", ax=ax)
     ax.set_title("Mối liên hệ giữa diện tích và giá nhà")
+    ax.legend(title="Số phòng ngủ")
     st.pyplot(fig)
 
     st.markdown("### 🧱 Giá trung bình theo Tình trạng nhà")
@@ -72,6 +75,7 @@ elif choice == "📊 Thống kê & Biểu đồ":
     sns.barplot(x=avg_price_condition.index, y=avg_price_condition.values, palette="YlGnBu", ax=ax)
     ax.set_xlabel("Tình trạng nhà (1: tệ - 5: tốt)")
     ax.set_ylabel("Giá trung bình (USD)")
+    ax.legend(["Giá trung bình"])
     st.pyplot(fig)
 
     st.markdown("### 🫧 Phân bố theo Số Phòng Ngủ & Tắm (Bubble Chart)")
@@ -91,6 +95,7 @@ elif choice == "📊 Thống kê & Biểu đồ":
     ax.set_xlabel("Số phòng ngủ")
     ax.set_ylabel("Số phòng tắm")
     ax.set_title("Phân bố nhà theo Phòng Ngủ & Tắm (kích thước = số lượng)")
+    legend = ax.legend(*bubble.legend_elements("sizes", num=6), title="Số lượng")
     st.pyplot(fig)
 
     if "city" in df.columns:
@@ -99,6 +104,8 @@ elif choice == "📊 Thống kê & Biểu đồ":
         fig, ax = plt.subplots(figsize=(10, 5))
         avg_price_by_city.plot(kind="barh", color="coral", ax=ax)
         ax.set_xlabel("Giá trung bình (USD)")
+        ax.set_title("Top 10 Thành phố có giá nhà trung bình cao nhất")
+        ax.legend(["Giá trung bình"])
         ax.invert_yaxis()
         st.pyplot(fig)
 
@@ -106,6 +113,7 @@ elif choice == "📊 Thống kê & Biểu đồ":
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.regplot(data=df, x="sqft_living", y="price", scatter_kws={'alpha':0.5}, line_kws={"color": "red"}, ax=ax)
     ax.set_title("Quan hệ giữa diện tích và giá nhà")
+    ax.legend(["Hồi quy tuyến tính"])
     st.pyplot(fig)
 
 elif choice == "🤖 Dự đoán Giá Nhà":
