@@ -38,32 +38,44 @@ elif choice == "📊 Thống kê & Biểu đồ":
     col3.metric("📐 Diện tích TB", f"{df['sqft_living'].mean():,.0f} sqft")
 
     st.markdown("---")
-    st.markdown("### 🔹 Phân phối giá nhà")
-    fig1, ax1 = plt.subplots()
-    sns.histplot(df["price"], kde=True, color="skyblue", ax=ax1)
-    ax1.set_xlabel("Giá nhà (USD)")
-    st.pyplot(fig1)
 
-    st.markdown("### 🔹 Hộp số giá theo số phòng ngủ")
-    fig2, ax2 = plt.subplots()
-    sns.boxplot(x="bedrooms", y="price", data=df, palette="Set2", ax=ax2)
-    ax2.set_xlabel("Số phòng ngủ")
-    ax2.set_ylabel("Giá nhà (USD)")
-    st.pyplot(fig2)
+    # Biểu đồ phân phối giá nhà
+    st.markdown("### 📈 Phân phối Giá Nhà")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.histplot(df["price"], kde=True, color="steelblue", bins=40, ax=ax)
+    ax.set_title("Biểu đồ phân phối giá nhà", fontsize=14)
+    ax.set_xlabel("Giá nhà (USD)")
+    st.pyplot(fig)
 
+    # Biểu đồ hộp giá theo số phòng ngủ
+    st.markdown("### 📊 Hộp Số Giá Theo Số Phòng Ngủ")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.boxplot(x="bedrooms", y="price", data=df, palette="viridis", ax=ax)
+    ax.set_title("Giá nhà theo số phòng ngủ")
+    st.pyplot(fig)
+
+    # Biểu đồ scatter diện tích - giá
+    st.markdown("### 📌 Quan hệ Diện tích và Giá nhà")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.scatterplot(data=df, x="sqft_living", y="price", hue="bedrooms", palette="cool", ax=ax)
+    ax.set_title("Giá nhà theo diện tích sinh hoạt")
+    st.pyplot(fig)
+
+    # Biểu đồ thành phố
     if "city" in df.columns:
-        st.markdown("### 🔹 Giá trung bình theo thành phố")
+        st.markdown("### 🌆 Giá trung bình theo Thành phố")
         avg_price_by_city = df.groupby("city")["price"].mean().sort_values(ascending=False).head(10)
-        fig3, ax3 = plt.subplots()
-        avg_price_by_city.plot(kind="bar", color="orange", ax=ax3)
-        ax3.set_ylabel("Giá trung bình (USD)")
-        ax3.set_xlabel("Thành phố")
-        st.pyplot(fig3)
+        fig, ax = plt.subplots(figsize=(10, 5))
+        avg_price_by_city.plot(kind="barh", color="coral", ax=ax)
+        ax.set_xlabel("Giá trung bình (USD)")
+        ax.invert_yaxis()
+        st.pyplot(fig)
 
-    st.markdown("### 🔹 Ma trận tương quan")
-    fig4, ax4 = plt.subplots(figsize=(10, 6))
-    sns.heatmap(df.select_dtypes(include=[int, float]).corr(), annot=True, cmap="coolwarm", ax=ax4)
-    st.pyplot(fig4)
+    # Ma trận tương quan
+    st.markdown("### 🧮 Ma trận tương quan giữa các đặc trưng")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.heatmap(df.select_dtypes(include=[int, float]).corr(), annot=True, cmap="Spectral", fmt=".2f", ax=ax)
+    st.pyplot(fig)
 
 elif choice == "🤖 Dự đoán Giá Nhà":
     st.subheader("🤖 Nhập thông tin để dự đoán giá nhà")
@@ -79,13 +91,10 @@ elif choice == "🤖 Dự đoán Giá Nhà":
         submit = st.form_submit_button("🚀 Dự đoán ngay")
 
         if submit:
-    input_data = pd.DataFrame([[bedrooms, bathrooms, sqft_living, floors, condition]],
-                              columns=["bedrooms", "bathrooms", "sqft_living", "floors", "condition"])
-    
-    # Không cần gán lại columns nữa
-    prediction = model.predict(input_data)
-    st.success(f"✅ Giá nhà dự đoán: ${prediction[0]:,.2f}")
-    st.progress(min(int(prediction[0] / 1500000 * 100), 100))
-
+            input_data = pd.DataFrame([[bedrooms, bathrooms, sqft_living, floors, condition]],
+                                      columns=["bedrooms", "bathrooms", "sqft_living", "floors", "condition"])
+            prediction = model.predict(input_data)
+            st.success(f"✅ Giá nhà dự đoán: ${prediction[0]:,.2f}")
+            st.progress(min(int(prediction[0] / 1500000 * 100), 100))
 
 st.caption("📌 Made with ❤️ by Khalam | Dữ liệu từ MongoDB | ML: RandomForest")
