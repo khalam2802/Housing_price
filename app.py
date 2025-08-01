@@ -74,12 +74,23 @@ elif choice == "📊 Thống kê & Biểu đồ":
     ax.set_ylabel("Giá trung bình (USD)")
     st.pyplot(fig)
 
-    st.markdown("### 🧩 Phân bố Nhà theo Số Phòng Ngủ và Tắm")
-    pivot = pd.crosstab(df["bedrooms"], df["bathrooms"])
-    fig, ax = plt.subplots(figsize=(8, 5))
-    sns.heatmap(pivot, annot=True, fmt="d", cmap="YlOrRd", ax=ax)
-    ax.set_xlabel("Số phòng tắm")
-    ax.set_ylabel("Số phòng ngủ")
+    st.markdown("### 🫧 Phân bố theo Số Phòng Ngủ & Tắm (Bubble Chart)")
+    grouped = df.groupby(["bedrooms", "bathrooms"]).size().reset_index(name="count")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bubble = ax.scatter(
+        grouped["bedrooms"],
+        grouped["bathrooms"],
+        s=grouped["count"] * 20,
+        alpha=0.6,
+        c=grouped["count"],
+        cmap="viridis"
+    )
+    for i in range(len(grouped)):
+        ax.text(grouped["bedrooms"][i], grouped["bathrooms"][i],
+                grouped["count"][i], ha="center", va="center", fontsize=8)
+    ax.set_xlabel("Số phòng ngủ")
+    ax.set_ylabel("Số phòng tắm")
+    ax.set_title("Phân bố nhà theo Phòng Ngủ & Tắm (kích thước = số lượng)")
     st.pyplot(fig)
 
     if "city" in df.columns:
@@ -91,9 +102,10 @@ elif choice == "📊 Thống kê & Biểu đồ":
         ax.invert_yaxis()
         st.pyplot(fig)
 
-    st.markdown("### 🧮 Ma trận tương quan giữa các đặc trưng")
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.heatmap(df.select_dtypes(include=[int, float]).corr(), annot=True, cmap="Spectral", fmt=".2f", ax=ax)
+    st.markdown("### 🧮 Tương quan Diện tích và Giá nhà")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.regplot(data=df, x="sqft_living", y="price", scatter_kws={'alpha':0.5}, line_kws={"color": "red"}, ax=ax)
+    ax.set_title("Quan hệ giữa diện tích và giá nhà")
     st.pyplot(fig)
 
 elif choice == "🤖 Dự đoán Giá Nhà":
