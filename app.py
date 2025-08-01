@@ -19,7 +19,16 @@ data = list(collection.find({}, {"_id": 0}))
 df = pd.DataFrame(data)
 
 # Load mô hình
+import zipfile
+import os
+
+# Giải nén file model
+if not os.path.exists("house_price_rf_model.pkl"):
+    with zipfile.ZipFile("house_price_rf_model.zip", "r") as zip_ref:
+        zip_ref.extractall(".")
+
 model = joblib.load("house_price_rf_model.pkl")
+
 
 # Tabs giao diện
 menu = ["📊 Thống kê & Biểu đồ", "📂 Dữ liệu", "🤖 Dự đoán Giá Nhà"]
