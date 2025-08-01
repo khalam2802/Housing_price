@@ -85,7 +85,7 @@ elif choice == "📊 Thống kê & Biểu đồ":
     st.markdown("### 🫧 Phân bố theo Số Phòng Ngủ & Tắm (Bubble Chart)")
     grouped = df.groupby(["bedrooms", "bathrooms"]).size().reset_index(name="count")
     fig, ax = plt.subplots(figsize=(10, 6))
-    bubble = ax.scatter(
+    scatter = ax.scatter(
         grouped["bedrooms"],
         grouped["bathrooms"],
         s=grouped["count"] * 20,
@@ -99,8 +99,7 @@ elif choice == "📊 Thống kê & Biểu đồ":
     ax.set_xlabel("Số phòng ngủ")
     ax.set_ylabel("Số phòng tắm")
     ax.set_title("Phân bố nhà theo Phòng Ngủ & Tắm (kích thước = số lượng)")
-    handles, labels = bubble.legend_elements(prop="sizes", alpha=0.6, num=6)
-    legend = ax.legend(handles, labels, title="Số lượng", loc='upper left', bbox_to_anchor=(1, 1))
+    cbar = fig.colorbar(scatter, ax=ax, label="Số lượng")
     st.pyplot(fig)
 
     if "city" in df.columns:
@@ -144,4 +143,3 @@ elif choice == "🤖 Dự đoán Giá Nhà":
             st.progress(min(int(prediction[0] / 1500000 * 100), 100))
 
 st.caption("📌 Made with ❤️ by Khalam | Dữ liệu từ MongoDB | ML: RandomForest")
-
