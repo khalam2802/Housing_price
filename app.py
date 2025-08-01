@@ -29,7 +29,6 @@ if not os.path.exists("house_price_rf_model.pkl"):
 
 model = joblib.load("house_price_rf_model.pkl")
 
-
 # Tabs giao diện
 menu = ["📊 Thống kê & Biểu đồ", "📂 Dữ liệu", "🤖 Dự đoán Giá Nhà"]
 choice = st.sidebar.radio("📌 Chọn chức năng:", menu)
@@ -48,29 +47,41 @@ elif choice == "📊 Thống kê & Biểu đồ":
 
     st.markdown("---")
 
-    # Biểu đồ phân phối giá nhà
     st.markdown("### 📈 Phân phối Giá Nhà")
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.histplot(df["price"], kde=True, color="steelblue", bins=40, ax=ax)
-    ax.set_title("Biểu đồ phân phối giá nhà", fontsize=14)
+    ax.set_title("Phân phối giá nhà", fontsize=14)
     ax.set_xlabel("Giá nhà (USD)")
     st.pyplot(fig)
 
-    # Biểu đồ hộp giá theo số phòng ngủ
-    st.markdown("### 📊 Hộp Số Giá Theo Số Phòng Ngủ")
+    st.markdown("### 🛏️ Hộp Giá Theo Số Phòng Ngủ")
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.boxplot(x="bedrooms", y="price", data=df, palette="viridis", ax=ax)
     ax.set_title("Giá nhà theo số phòng ngủ")
     st.pyplot(fig)
 
-    # Biểu đồ scatter diện tích - giá
-    st.markdown("### 📌 Quan hệ Diện tích và Giá nhà")
+    st.markdown("### 📐 Giá nhà theo Diện tích sinh hoạt")
     fig, ax = plt.subplots(figsize=(10, 5))
     sns.scatterplot(data=df, x="sqft_living", y="price", hue="bedrooms", palette="cool", ax=ax)
-    ax.set_title("Giá nhà theo diện tích sinh hoạt")
+    ax.set_title("Mối liên hệ giữa diện tích và giá nhà")
     st.pyplot(fig)
 
-    # Biểu đồ thành phố
+    st.markdown("### 🧱 Giá trung bình theo Tình trạng nhà")
+    avg_price_condition = df.groupby("condition")["price"].mean()
+    fig, ax = plt.subplots(figsize=(8, 4))
+    sns.barplot(x=avg_price_condition.index, y=avg_price_condition.values, palette="YlGnBu", ax=ax)
+    ax.set_xlabel("Tình trạng nhà (1: tệ - 5: tốt)")
+    ax.set_ylabel("Giá trung bình (USD)")
+    st.pyplot(fig)
+
+    st.markdown("### 🧩 Phân bố Nhà theo Số Phòng Ngủ và Tắm")
+    pivot = pd.crosstab(df["bedrooms"], df["bathrooms"])
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.heatmap(pivot, annot=True, fmt="d", cmap="YlOrRd", ax=ax)
+    ax.set_xlabel("Số phòng tắm")
+    ax.set_ylabel("Số phòng ngủ")
+    st.pyplot(fig)
+
     if "city" in df.columns:
         st.markdown("### 🌆 Giá trung bình theo Thành phố")
         avg_price_by_city = df.groupby("city")["price"].mean().sort_values(ascending=False).head(10)
@@ -80,7 +91,6 @@ elif choice == "📊 Thống kê & Biểu đồ":
         ax.invert_yaxis()
         st.pyplot(fig)
 
-    # Ma trận tương quan
     st.markdown("### 🧮 Ma trận tương quan giữa các đặc trưng")
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(df.select_dtypes(include=[int, float]).corr(), annot=True, cmap="Spectral", fmt=".2f", ax=ax)
@@ -101,7 +111,7 @@ elif choice == "🤖 Dự đoán Giá Nhà":
 
         if submit:
             input_data = pd.DataFrame([[bedrooms, bathrooms, sqft_living, floors, condition]],
-                                      columns=["bedrooms", "bathrooms", "sqft_living", "floors", "condition"])
+                                      columns=model.feature_names_in_)
             prediction = model.predict(input_data)
             st.success(f"✅ Giá nhà dự đoán: ${prediction[0]:,.2f}")
             st.progress(min(int(prediction[0] / 1500000 * 100), 100))
